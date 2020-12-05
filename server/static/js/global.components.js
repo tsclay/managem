@@ -29,3 +29,11 @@ const loadingSpinner = nestElements(
     )
   ]
 )
+
+const formatDateTimeString = (isoStr) => {
+  const date = new Date((isoStr += 'Z'))
+  return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`
+}
+
+const userRole = searchForOne('meta[name="role"]').content
+

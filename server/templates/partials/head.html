@@ -1,6 +1,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="role" content="{{role}}" />
+  {% if title == 'Account Recovery' %}
+  <meta name="recovery" content="{{url}}" />
+  {% endif %}
 
   <link
     rel="apple-touch-icon"
@@ -31,6 +35,8 @@
   <meta name="msapplication-TileColor" content="#2b5797" />
   <meta name="theme-color" content="rgb(104, 104, 104)" />
 
+  <script src="{{url_for('static', filename='js/helpers.js')}}"></script>
+
   <link
     rel="stylesheet"
     href="{{url_for('static', filename='css/styles.global.css')}}"
@@ -59,9 +65,12 @@
     rel="stylesheet"
     href="{{url_for('static', filename='css/styles.settings.css')}}"
   />
+  {% endif %} {% if title == 'Galleries' %}
+  <link
+    rel="stylesheet"
+    href="{{url_for('static', filename='css/styles.galleries.css')}}"
+  />
   {% endif %}
-
-  <script src="{{url_for('static', filename='js/helpers.js')}}"></script>
 
   <title>managem | {{title}}</title>
 </head>
