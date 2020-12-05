@@ -1,6 +1,6 @@
-# MFP Website & Content Portal
+# managem
 
-New and improved website for Mims Family Painting.
+An admin portal for managing front-end content.
 
 ## Development Environment
 
@@ -39,16 +39,6 @@ bash scripts/install.sh
 ```
 
 ## Project Navigation
-
-### Front-end
-
-Front-end website created with Svelte framework.
-
-Located in `/client`
-
-### Back-end
-
-managem used for content-management.
 
 - Routing: `server/blueprints`
 - Templates/Views: `server/templates`
