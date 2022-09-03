@@ -6,6 +6,8 @@
   <meta name="recovery" content="{{url}}" />
   {% endif %}
 
+  <meta name="csrf_token" content="{{ csrf_token() }}" />
+
   <link
     rel="apple-touch-icon"
     sizes="180x180"
@@ -36,6 +38,7 @@
   <meta name="theme-color" content="rgb(104, 104, 104)" />
 
   <script src="{{url_for('static', filename='js/helpers.js')}}"></script>
+  <script src="{{url_for('static', filename='js/global.components.js')}}"></script>
 
   <link
     rel="stylesheet"
