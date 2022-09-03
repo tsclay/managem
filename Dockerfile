@@ -22,7 +22,7 @@ ENTRYPOINT [ "/code/scripts/entrypoint.sh" ]
 # reloading
 FROM base AS dev
 ENV FLASK_ENV=development
-EXPOSE 3000
+EXPOSE 5000
 ENTRYPOINT [ "/code/scripts/entrypoint.sh" ]
 
 # Production image using Gunicorn
