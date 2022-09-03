@@ -1,8 +1,9 @@
 /******************
-GLOBAL
+Root
 ******************/
 :root {
   --light: rgb(212, 212, 212);
+  --light-selected: rgba(212, 212, 212, 0.58);
   --gray: rgb(104, 104, 104);
   --primary: rgb(97, 97, 250);
   --selected: rgba(60, 244, 244, 0.61);
@@ -12,6 +13,9 @@ GLOBAL
   --pretty: rgb(186, 186, 255);
 }
 
+/******************
+Containers
+******************/
 html,
 body {
   margin: 0;
@@ -21,21 +25,37 @@ body {
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
 }
 
+#root {
+  width: 95%;
+  margin: 0 auto;
+  padding: 0 2rem;
+  box-sizing: border-box;
+}
+
+/******************
+Typography
+******************/
 a {
   text-decoration: none;
   color: inherit;
   font-size: inherit;
 }
 
-#root {
-  width: 95%;
-  margin: 0 auto;
-  padding: 2rem;
-  box-sizing: border-box;
+a.message-link {
+  text-decoration: underline;
+  color: var(--primary);
+  cursor: pointer;
 }
 
 h1 {
   font-size: 2rem;
+}
+
+/******************
+Forms
+******************/
+form * {
+  font-family: "Helvetica Neue";
 }
 
 input,
@@ -52,7 +72,6 @@ input {
 }
 
 textarea {
-  font-family: "Helvetica Neue";
   white-space: pre-wrap;
 }
 
@@ -67,11 +86,17 @@ button,
   cursor: pointer;
 }
 
+/******************
+Media
+******************/
 img {
   width: 300px;
   height: 300px;
 }
 
+/******************
+Loading Spinner
+******************/
 .loader-icon {
   animation: rotateLoader 0.5s linear 0s infinite forwards;
   width: 100%;
@@ -87,12 +112,6 @@ img {
   bottom: 50%;
   right: 50%;
   transform: translate(50%, 50%);
-}
-
-.message-link {
-  text-decoration: underline;
-  color: var(--primary);
-  cursor: pointer;
 }
 
 @keyframes rotateLoader {
