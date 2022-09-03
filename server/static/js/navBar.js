@@ -24,12 +24,15 @@
 // Logout user thru AJAX
 const logoutUser = async () => {
   const username = searchForOne('#session-username').innerText
+  const csrf = searchForOne('meta[name="csrf_token"]').content
   const request = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json'
+      Accept: 'application/json',
+      'X-CSRFToken': csrf
     },
+    credentials: 'same-origin',
     body: `username=${username}`
   }
   const response = await fetch('/admin/logout', request).then((r) => r.json())
@@ -91,9 +94,12 @@ const showModal = () => {
   }
 }
 
+searchForOne('#options-toggle').addEventListener('click', showModal)
+
 // Filter #search-container for items with partially-matching text
 // Typing '>images [search term here]' will search img tags
 let searchTargets
+
 const search = (e) => {
   e.preventDefault()
   const searchContainer = searchForOne('#search-container')
@@ -112,9 +118,11 @@ const search = (e) => {
     ? new RegExp(value.match(/(?:>images )(\w.+)/i)[1], 'i')
     : new RegExp(value, 'gi')
   searchTargets.forEach((s) => {
-    if (needImages) {
-      const { alt, src } = s.querySelector('img')
-      regex.test(alt) ? found.push(s) : regex.test(src) ? found.push(s) : null
+    if (needImages && s.querySelector('img')) {
+      s.querySelectorAll('img').forEach((item, i) => {
+        const { alt, src } = item
+        regex.test(alt) ? found.push(s) : regex.test(src) ? found.push(s) : null
+      })
     } else {
       s.textContent.match(regex) ? found.push(s) : null
     }
@@ -123,6 +131,8 @@ const search = (e) => {
   searchContainer.appendChild(fragmentElements(found))
   return searchTargets
 }
+
+searchForOne('#search-form').addEventListener('submit', search)
 
 // Typing '>' first will toggle dropdown options similar to VSCode functionality
 const displaySearchFilters = (e) => {
@@ -154,3 +164,8 @@ const displaySearchFilters = (e) => {
 
   nestElements(inputWrapper, [filtersDropdown])
 }
+
+searchForOne('input[form="search-form"]').addEventListener(
+  'input',
+  displaySearchFilters
+)
