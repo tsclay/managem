@@ -11,14 +11,11 @@ if [ nc -z $DATABASE ] && [ "$DATABASE" = "postgres" ]; then
 fi
 
 if [ "$FLASK_ENV" = "development" ]; then
-  echo "🏞 Loading .env 🏞"
-  set -a
-  source .dev.env
   python manage.py create_db
   echo "💻  Dev database created! 💻"
   python manage.py seed_db
   echo "🌱 Database seeded 🌱"
-  flask run
+  flask run --host=0.0.0.0
 fi
 
 if [ "$FLASK_ENV" = "staging" ]; then
@@ -40,20 +37,20 @@ if [ "$FLASK_ENV" = "staging" ]; then
 fi
 
 if [ "$FLASK_ENV" = "production" ]; then
-  echo "🏞 Loading .env 🏞"
-  set -a
-  source .prod.env
+  # echo "🏞 Loading .env 🏞"
+  # set -a
+  # source .prod.env
   echo "📦 Installing NPM packages 📦"
   cd client && npm i
   npm run build
   echo "🚀 Svelte app bundled 🚀"
   cd ..
   sleep 0.1
-  python manage.py create_db
-  echo "💻  Dev database created! 💻"
-  python manage.py seed_db
-  echo "🌱 Database seeded 🌱"
-  gunicorn -b 0.0.0.0:$PORT 'server:create_app()'
+  # python manage.py create_db
+  # echo "💻  Dev database created! 💻"
+  # python manage.py seed_db
+  # echo "🌱 Database seeded 🌱"
+  gunicorn -b 0.0.0.0:$PORT -w 4 'server:create_app()'
 fi
 
 exec "$@"
