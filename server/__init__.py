@@ -17,11 +17,12 @@ def create_app():
     db.init_app(server)
     csrf.init_app(server)
     limiter.init_app(server)
-    Talisman(server, content_security_policy={
+    talisman = Talisman(server, content_security_policy={
         'font-src': ["'self'", 'themes.googleusercontent.com', '*.gstatic.com'],
         'script-src': ["'self'", 'ajax.googleapis.com'],
         'style-src': ["'self'", 'fonts.googleapis.com', '*.gstatic.com', 'ajax.googleapis.com', "'unsafe-inline'", ],
-        'default-src':  ["'self'", '*.gstatic.com']
+        'default-src':  ["'self'", '*.gstatic.com'],
+        'content_security_policy_nonce_in': ['script-src', 'style-src']
     }, force_https=False)
 
     from server.models.Client_Resources import Client_Resources
@@ -76,6 +77,7 @@ def create_app():
         return render_template('error.html', message=message, error=error)
 
     @server.route('/', methods=["GET"])
+    @talisman(content_security_policy=[])
     @limiter.limit('50/minute')
     def home():
         return render_template('index.html', test=request.headers)
