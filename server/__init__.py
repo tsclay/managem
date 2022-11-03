@@ -6,7 +6,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 
 def create_app():
-    server = Flask(__name__, template_folder='../client/public')
+    server = Flask(__name__, template_folder='../client/dist')
 
     server.wsgi_app = ProxyFix(server.wsgi_app, x_for=1)
     server.config.from_object("server." + os.environ["APP_SETTINGS"])
@@ -43,7 +43,7 @@ def create_app():
     from server.blueprints.gallery import galleries
     from server.blueprints.users import users
 
-    server.register_blueprint(auth, url_prefix="/admin")
+    server.register_blueprint(auth, url_prefix="/auth")
     server.register_blueprint(images, url_prefix='/admin/assets')
     server.register_blueprint(content, url_prefix='/content')
     server.register_blueprint(galleries, url_prefix='/galleries')
@@ -87,7 +87,7 @@ def create_app():
     @server.route("/<path:path>")
     @limiter.exempt
     def send_assets(path):
-        return send_from_directory('../client/public', path)
+        return send_from_directory('../client/dist', path)
 
     @server.route('/resources', methods=['GET'])
     def get_resources():
