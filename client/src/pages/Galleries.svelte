@@ -1,3 +1,61 @@
+<script lang="ts">
+	import { onMount } from "svelte"
+
+  const showContentEditor = (e, tag) => {
+    console.log("show content editor")
+  }
+
+  const selectAllMode = () => {
+    console.log("select all button")
+  }
+
+  const showMenu = () => {
+    console.log("show menu button")
+  }
+
+  const selectThisContent = () => {
+    console.log("select this content button")
+  }
+
+  let linkedGalleries = []
+  let nonLinkedGalleries = []
+
+  const getLinkedAndNonLinked = (galleries) => {
+    const l = []
+    const n = []
+    galleries.forEach(g => {
+      if(g.resource_id) {
+        l.push(g)
+      } else {
+        n.push(g)
+      }
+    })
+
+    linkedGalleries = l
+    nonLinkedGalleries = n
+  }
+
+  const getGalleries = async () => {
+    const response = await fetch('/galleries/all', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      credentials: 'same-origin'
+    })
+    if (response.ok) {
+      const galleries = await response.json()
+      getLinkedAndNonLinked(galleries)
+    }
+  }
+
+  onMount(async () => {
+    await getGalleries()
+  })
+
+</script>
+
 <div id="root">
   <div class="editors" />
   <!-- Toggle content editor to create new content -->
@@ -284,6 +342,36 @@
   <!-- Display existing content and new content after creation -->
   <h1>Galleries</h1>
   <div id="search-container" class="gallery-grid" />
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <h1 style="margin: 0; padding: 0.25rem 1rem; width: 49%; background: var(--light); box-sizing: border-box; border-radius: 8px;">Linked</h1>
+    <div style="width: 49%; border-bottom: 2px solid black; margin: 0 auto;"></div>
+  </div>
+  {#each linkedGalleries as g,i}
+    <div class="rendered-block r-gallery" data-id={g.id}>
+      <h2 style="margin: 0;">{g.gallery_name}</h2>
+      <p style="margin: 1rem 0 2rem 0;">{g.description}</p>
+      <div class="gallery-row">
+        {#each g.images as image}
+          <img src={image.src} alt={image.alt} data-image-id={image.id} class="gallery-img">
+        {/each}
+      </div>
+    </div>
+  {/each}
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <h1 style="margin: 0; padding: 0.25rem 1rem; width: 49%; background: var(--light); box-sizing: border-box; border-radius: 8px;">Non-Linked</h1>
+    <div style="width: 49%; border-bottom: 2px solid black; margin: 0 auto;"></div>
+  </div>
+  {#each nonLinkedGalleries as g,i}
+    <div class="rendered-block r-gallery" data-id={g.id}>
+      <h2 style="margin: 0;">{g.gallery_name}</h2>
+      <p style="margin: 1rem 0 2rem 0;">{g.description}</p>
+      <div class="gallery-row">
+        {#each g.images as image}
+          <img src={image.src} alt={image.alt} data-image-id={image.id} class="gallery-img">
+        {/each}
+      </div>
+    </div>
+  {/each}
 </div>
 
 <style>

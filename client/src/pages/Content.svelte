@@ -1,3 +1,61 @@
+<script lang="ts">
+	import { onMount } from "svelte"
+
+  const showContentEditor = (e, tag) => {
+    console.log("show content editor")
+  }
+
+  const selectAllMode = () => {
+    console.log("select all button")
+  }
+
+  const showMenu = () => {
+    console.log("show menu button")
+  }
+
+  const selectThisContent = () => {
+    console.log("select this content button")
+  }
+
+
+  let linkedContent = []
+  let nonLinkedContent = []
+
+  const getLinkedAndNonLinked = (content) => {
+    const l = []
+    const n = []
+    content.forEach(g => {
+      if(g.resource_id) {
+        l.push(g)
+      } else {
+        n.push(g)
+      }
+    })
+
+    linkedContent = l
+    nonLinkedContent = n
+  }
+  const getContent = async () => {
+    const response = await fetch('/content/all', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      credentials: 'same-origin'
+    })
+    if (response.ok) {
+      const content = await response.json()
+      getLinkedAndNonLinked(content)
+    }
+  }
+
+  onMount(async () => {
+    await getContent()
+  })
+
+</script>
+
 <div id="root">
   <div class="editors" />
   <!-- Toggle content editor to create new content -->
@@ -283,7 +341,38 @@
   </div>
   <!-- Display existing content and new content after creation -->
   <h1>Content</h1>
-  <div id="search-container" class="content-grid" />
+  <div id="search-container" class="content-grid">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <h1 style="margin: 0; padding: 0.25rem 1rem; width: 49%; background: var(--light); box-sizing: border-box; border-radius: 8px;">Linked</h1>
+      <div style="width: 49%; border-bottom: 2px solid black; margin: 0 auto;"></div>
+    </div>
+    {#each linkedContent as c}
+    <div class="rendered-block r-content" data-content-id={c.id} on:click={selectThisContent}>
+      <div id={`content${c.id}`} data-image-pair={c.image_id} class="rendered-content">
+        <h2 data-id={c.id} style="margin: 0;">{c.header_text}</h2>
+        <p data-id={c.paragraph_id} style="margin: 1rem 0 2rem 0;">{c.paragraph_text}</p>
+      </div>
+      <div class="rendered-image">
+        <img src={c.image_link} alt={c.image_name} data-id={c.image_id} data-content-ref={`content${c.id}`}>
+      </div>
+    </div>
+    {/each}
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+    <h1 style="margin: 0; padding: 0.25rem 1rem; width: 49%; background: var(--light); box-sizing: border-box; border-radius: 8px;">Non-Linked</h1>
+    <div style="width: 49%; border-bottom: 2px solid black; margin: 0 auto;"></div>
+  </div>
+        {#each nonLinkedContent as c}
+    <div class="rendered-block r-content" data-content-id={c.id} on:click={selectThisContent}>
+      <div id={`content${c.id}`} data-image-pair={c.image_id} class="rendered-content">
+        <h2 data-id={c.id} style="margin: 0;">{c.header_text}</h2>
+        <p data-id={c.paragraph_id} style="margin: 1rem 0 2rem 0;">{c.paragraph_text}</p>
+      </div>
+      <div class="rendered-image">
+        <img src={c.image_link} alt={c.image_name} data-id={c.image_id} data-content-ref={`content${c.id}`}>
+      </div>
+    </div>
+    {/each}
+  </div>
 </div>
 
 <style>
