@@ -1,10 +1,13 @@
 <script lang="ts">
   import { redirect } from '../router'
   import { fade } from 'svelte/transition'
+  import { csrfToken, currentUser } from '../lib/store'
+	import type { UserData } from 'src/types/user.type'
 
   let messageTimer
   let showRecoveryModal = false
   let messages = []
+  
   // messageTimer = setTimeout(() => {
   //   const allMessages = searchForAll(".messages > *");
   //   allMessages.forEach((m) => {
@@ -48,24 +51,30 @@
   const attemptLogin = async (e) => {
     e.preventDefault()
     const payload = {
-      username: e.target[1].value,
-      password: e.target[2].value
+      username: e.target[0].value,
+      password: e.target[1].value
     }
-    const response = await fetch('/admin/login', {
+    const response = await fetch('/login', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
-        'X-CSRFToken': e.target[0].value
+        'X-CSRFToken': $csrfToken
       },
       credentials: 'same-origin',
       body: JSON.stringify(payload)
     })
+    console.log(response)
     if (response.status === 200) {
-      return window.location.replace('/admin')
+      const user = await response.json()
+      $currentUser = {
+        username: user.username,
+        role: user.role
+      }
+      return redirect('/')
     }
-    const message = await response.json()
-    return showClientMessage(message)
+    // const message = await response.json()
+    // return showClientMessage(message)
   }
 
   const sendRecoveryEmail = async (e) => {
@@ -194,7 +203,6 @@
       {/each}
     </div>
     <form on:submit={attemptLogin}>
-      <input name="csrf_token" type="text" />
       <input type="text" name="username" id="username" placeholder="Username" />
       <input
         type="password"

@@ -1,5 +1,8 @@
-<script>
+<script lang="ts">
   import { logoutUser } from '../lib/_auth'
+  import type { UserLogoutRequest } from 'src/types/api.type';
+  import { currentUser, csrfToken } from '../lib/store'
+  import { redirect } from '../router'
   let showModal = false
   let showFiltersDropdown = false
 
@@ -59,6 +62,37 @@
 
     showFiltersDropdown = true
   }
+
+  // const logoutUser = async () => {
+  //   const request: UserLogoutRequest = {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Accept: 'application/json',
+  //       'X-CSRFToken': $csrfToken
+  //     },
+  //     credentials: 'same-origin',
+  //     body: JSON.stringify({username: $currentUser.username})
+  //   }
+  //   const response = await fetch('/logout', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Accept: 'application/json',
+  //       'X-CSRFToken': $csrfToken
+  //     },
+  //     credentials: 'same-origin',
+  //     body: JSON.stringify({username: $currentUser.username})
+  //   })
+
+  //   console.log(response)
+
+  //   if (response.status === 200) {
+  //     console.log($currentUser)
+  //     $currentUser = null
+  //     return redirect('/login')
+  //   }
+  // }
 </script>
 
 <nav class="admin-nav">
@@ -190,7 +224,13 @@
             class="button modal-btn">Galleries</a
           ><a href="/settings" class="button modal-btn">Settings</a><a
             class="button modal-btn"
-            on:click={() => logoutUser()}>Logout</a
+            on:click={() => {
+              const logout = logoutUser($currentUser, $csrfToken)
+              if (logout) {
+                $currentUser = null
+                redirect('/')
+              }
+            }}>Logout</a
           >
         </div>
       {/if}
