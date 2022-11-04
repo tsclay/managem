@@ -4,6 +4,7 @@ from flask.helpers import make_response
 from flask.json import jsonify
 from server.blueprints import decrypt
 from datetime import timezone
+from flask_wtf import csrf
 from flask import Blueprint, url_for, render_template, request, session, redirect
 import json
 from server.db import db
@@ -18,23 +19,28 @@ def handle_excess_attempts(e):
     return make_response(jsonify(error="For security reasons, you are unable to make login attempts for one hour."), 429)
 
 
-@auth.route('', methods=["GET"])
-def home():
-    if 'username' not in session:
-        return redirect(url_for('auth.login'))
+# @auth.route('', methods=["GET"])
+# def home():
+#     if 'username' not in session:
+#         return redirect(url_for('auth.login'))
 
-    return render_template('home.html', user=session["username"], role=session["role"], title='Home')
+#     return render_template('home.html', user=session["username"], role=session["role"], title='Home')
+
+@auth.route('/csrf-token', methods=["GET"])
+def get_csrf_token():
+    return make_response(jsonify(token=csrf.generate_csrf()), 200)
 
 
-@auth.route('/login', methods=["GET", "POST"])
+@auth.route('/login', methods=["POST"])
 @limiter.limit('5/hour', override_defaults=True, deduct_when=lambda response: response.status_code == 401)
 def login():
-    if request.method == "GET":
-        message = request.args.get('message')
-        if message is not None:
-            return render_template('login.html', message=json.loads(message))
-        else:
-            return render_template('login.html')
+    # if request.method == "GET":
+    #     message = request.args.get('message')
+    #     if message is not None:
+    #         return redirect('/')
+    #         return render_template('login.html', message=json.loads(message))
+    #     else:
+    #         return render_template('login.html')
 
     data = request.get_json()
     username = data["username"]
@@ -50,21 +56,23 @@ def login():
         found_user.last_logged_in = datetime.datetime.now(timezone.utc)
         db.session.add(found_user)
         db.session.commit()
-        return redirect(url_for('auth.home'), 302)
+        # return redirect(url_for('auth.home'), 302)
+        return make_response(jsonify(message="Authenticated.", username=found_user.username, role=found_user.role), 200)
     else:
         return make_response(jsonify(error="Double-check your credentials and try again."), 401)
 
 
 @auth.route('/logout', methods=["POST"])
 def logout():
-    if 'username' not in session:
-        return redirect(url_for('auth.login'))
+    # if 'username' not in session:
+    #     return redirect(url_for('auth.login'))
+    user_data = request.get_json()
 
     found_user = Admin.query.filter_by(
-        username=session['username']).first()
+        username=user_data['username']).first()
     found_user.active = False
     db.session.add(found_user)
     db.session.commit()
     session.pop('username', None)
     session.pop('role', None)
-    return json.dumps({"message": 'Logout successful'})
+    return make_response(jsonify(message='Logout successful'), 200)
