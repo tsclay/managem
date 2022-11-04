@@ -1,7 +1,8 @@
 <script lang="ts">
   // import router from 'page'
   import { Router, Route, NotFound, redirect } from './router'
-  import { activeRoute } from './lib/store'
+  import { activeRoute, currentUser, csrfToken } from './lib/store'
+  import { onMount } from 'svelte'
 
   import Home from './pages/Home.svelte'
   import Settings from './pages/Settings.svelte'
@@ -13,13 +14,25 @@
 
   const guard = (ctx, next) => {
     // check for example if user is authenticated
-    if (true) {
+    if ($currentUser === null) {
       redirect('/login')
     } else {
       // go to the next callback in the chain
       next()
     }
   }
+
+  const goToHome = (ctx, next) => {
+    if ($currentUser !== null && $activeRoute.path.includes('login')) {
+      redirect('/')
+    } else {
+      next()
+    }
+  }
+
+  // onMount(async () => {
+  //   $csrfToken = await getCSRFToken()
+  // })
 </script>
 
 {#if $activeRoute.path && !$activeRoute.path.includes('login')}
@@ -28,10 +41,10 @@
 
 <!-- <svelte:component this={page} {pathname} /> -->
 <Router>
-  <Route path="/" component={Home} />
-  <Route path="/login" component={Login} />
-  <Route path="/settings" component={Settings} />
-  <Route path="/images" component={Images} />
-  <Route path="/galleries" component={Galleries} />
-  <Route path="/content" component={Content} />
+  <Route path="/" component={Home} middleware={[guard]}/>
+  <Route path="/login" component={Login} middleware={[goToHome]} />
+  <Route path="/settings" component={Settings} middleware={[guard]}/>
+  <Route path="/images" component={Images} middleware={[guard]} />
+  <Route path="/galleries" component={Galleries} middleware={[guard]} />
+  <Route path="/content" component={Content} middleware={[guard]} />
 </Router>
