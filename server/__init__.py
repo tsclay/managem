@@ -43,7 +43,7 @@ def create_app():
     from server.blueprints.gallery import galleries
     from server.blueprints.users import users
 
-    server.register_blueprint(auth, url_prefix="/auth")
+    server.register_blueprint(auth, url_prefix="")
     server.register_blueprint(images, url_prefix='/admin/assets')
     server.register_blueprint(content, url_prefix='/content')
     server.register_blueprint(galleries, url_prefix='/galleries')
@@ -55,8 +55,8 @@ def create_app():
 # Set custom CSP settings for admin portal, no easier way to do this unfortunately
 # https://github.com/GoogleCloudPlatform/flask-talisman/issues/45
     with server.app_context():
-        setattr(current_app.view_functions.get("auth.home"), "talisman_view_options", {
-                "content_security_policy": {"default-src": "* 'unsafe-inline'"}})
+        # setattr(current_app.view_functions.get("auth.home"), "talisman_view_options", {
+        #         "content_security_policy": {"default-src": "* 'unsafe-inline'"}})
         setattr(current_app.view_functions.get("auth.login"), "talisman_view_options", {
             "content_security_policy": {"default-src": "* 'unsafe-inline'"}})
         setattr(current_app.view_functions.get("images.handle_images"), "talisman_view_options", {
