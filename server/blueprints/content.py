@@ -56,10 +56,10 @@ def render():
     return render_template('content.html', user=session["username"], role=session["role"], title="Content")
 
 
-@content.route('/admin/all', methods=["GET"])
+@content.route('/all', methods=["GET"])
 def show_all():
-    if 'username' not in session:
-        return redirect(url_for('auth.login'))
+    # if 'username' not in session:
+    #     return redirect(url_for('auth.login'))
 
     payload = read()
     return payload
