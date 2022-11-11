@@ -10,7 +10,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config(object):
-    DEBUG = False
+    DEBUG = bool(os.environ["FLASK_DEBUG"])
     TESTING = False
     SECRET_KEY = os.environ["SECRET_KEY"]
     PREFERRED_URL_SCHEME = 'https'
