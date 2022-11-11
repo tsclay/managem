@@ -69,8 +69,11 @@
       const user = await response.json()
       $currentUser = {
         username: user.username,
+        first_name: user.first_name,
+        last_name: user.last_name,
         role: user.role
       }
+      localStorage.setItem('managemUser', $currentUser.username)
       return redirect('/')
     }
     // const message = await response.json()

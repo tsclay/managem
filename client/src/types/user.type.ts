@@ -1,4 +1,6 @@
 export type UserData = {
-  username: string,
-  role: string
-}|null
+	username: string
+	first_name: string
+	last_name: string
+	role: string
+} | null
