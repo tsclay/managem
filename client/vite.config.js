@@ -16,6 +16,7 @@ export default defineConfig({
 			'/galleries':  'http://localhost:4001',
 			'/settings':  'http://localhost:4001',
 			'/csrf-token': 'http://localhost:4001',
+			'/auth-check': 'http://localhost:4001',
 			'/static': 'http://localhost:4001'
 		}
 	}
