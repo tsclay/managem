@@ -1,3 +1,4 @@
+from functools import wraps
 import pickle
 from google.auth.transport.requests import Request
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
@@ -8,8 +9,21 @@ import base64
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from flask import current_app
+from flask import current_app, make_response, redirect
 import datetime
+
+
+def skip_redirect(*args, **kw):
+    def wrapper(endpoint_method):
+        endpoint_method._skip_redirect = True
+
+        @wraps(endpoint_method)
+        def wrapped(*endpoint_args, **endpoint_kw):
+            # This is what I want I want to do. Will not work.
+            #g.skip_analytics = getattr(endpoint_method, '_skip_analytics', False)
+            return endpoint_method(*endpoint_args, **endpoint_kw)
+        return wrapped
+    return wrapper
 
 
 def encrypt_credentials(user_cred):
