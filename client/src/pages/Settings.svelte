@@ -1,5 +1,6 @@
 <script lang="ts">
   import Admin from '../components/Admin.svelte'
+  import {currentUser} from '../lib/store'
 
   const changeSettings = async (e) => {
     e.preventDefault()
@@ -39,6 +40,8 @@
     password.value = ''
     searchForOne('#session-username').innerText = response.username
   }
+
+  // console.log(`inside settings: ${JSON.stringify($currentUser)}`)
 </script>
 
 <div id="root">
@@ -50,19 +53,19 @@
         <h4 class="attr-names">Name</h4>
         <h4 class="attr-values">
           <span data-id="db_values" id="first_name"
-            >{current_user['first_name']}</span
+            >{$currentUser['first_name']}</span
           >
           <span data-id="db_values" id="last_name"
-            >{current_user['last_name']}</span
+            >{$currentUser['last_name']}</span
           >
         </h4>
         <h4 class="attr-names">Username</h4>
         <h4 data-id="db_values" id="username" class="attr-values">
-          {current_user['username']}
+          {$currentUser['username']}
         </h4>
         <h4 id="role-header" class="attr-names">Role</h4>
         <h4 data-id="db_values" id="role-value" class="attr-values">
-          {current_user['role']}
+          {$currentUser['role']}
         </h4>
         <h4 id="password-header" class="attr-names">Change Password</h4>
 
@@ -90,7 +93,7 @@
             /> -->
 
         <div class="role-request">
-          {#if role == 'admin'}
+          {#if $currentUser.role == 'admin'}
             🔐
           {:else}
             You may request a change in role to an admin.
@@ -107,7 +110,7 @@
         <button type="submit" form="user-settings">Confirm</button>
       </div>
     </div>
-    {#if role == 'admin' || role == 'manager'}
+    {#if $currentUser.role == 'admin' || $currentUser.role == 'manager'}
       <!-- <div class="create-user">
         <form
           on:submit={createUser}
